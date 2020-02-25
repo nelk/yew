@@ -5,6 +5,7 @@ extern crate stdweb;
 use stdweb::unstable::TryFrom;
 use stdweb::web::Node;
 use yew::virtual_dom::VNode;
+use yew::html;
 use yew::{Component, ComponentLink, Html, ShouldRender};
 
 const SVG: &str = r#"
@@ -15,18 +16,17 @@ const SVG: &str = r#"
 </svg>
 "#;
 
-pub struct Model {
+
+pub struct Model2 {
     pub value: i64,
 }
 
-pub enum Msg {}
-
-impl Component for Model {
-    type Message = Msg;
+impl Component for Model2 {
+    type Message = ();
     type Properties = ();
 
     fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Model { value: 0 }
+        Self { value: 0 }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
@@ -47,3 +47,40 @@ impl Component for Model {
         vnode
     }
 }
+
+pub struct Model {
+    is_shown: bool,
+    link: ComponentLink<Self>,
+}
+
+impl Component for Model {
+    type Message = ();
+    type Properties = ();
+
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self { is_shown: true, link }
+    }
+
+    fn update(&mut self, _: Self::Message) -> ShouldRender {
+        self.is_shown = !self.is_shown;
+        true
+    }
+
+    fn view(&self) -> Html {
+        let onclick = self.link.callback(|_| ());
+        if self.is_shown {
+            html! {
+                <div>
+                    <button onclick=onclick>{"Toggle"}</button>
+                    <Model2: />
+                </div>
+            }
+        } else {
+            html! {
+                <button onclick=onclick />
+            }
+        }
+    }
+}
+
+
